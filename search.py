@@ -86,7 +86,6 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
     
     # Usar una pila (Stack) para DFS
     from util import Stack
@@ -125,7 +124,6 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
     
     # Usar una cola (Queue) para BFS
     from util import Queue
@@ -164,7 +162,6 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
     
     # Usar una cola de prioridad (PriorityQueue) para UCS
     from util import PriorityQueue
@@ -212,7 +209,6 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
     
     # Usar una cola de prioridad (PriorityQueue) para A*
     from util import PriorityQueue

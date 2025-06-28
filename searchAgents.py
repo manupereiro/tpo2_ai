@@ -287,22 +287,23 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Estado: (posición, esquinas_visitadas)
+        # esquinas_visitadas es una tupla de booleanos indicando qué esquinas hemos visitado
+        return (self.startingPosition, (False, False, False, False))
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        position, corners_visited = state
+        # El objetivo es haber visitado todas las esquinas
+        return all(corners_visited)
 
     def getSuccessors(self, state):
         """
@@ -324,7 +325,23 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            position, corners_visited = state
+            x, y = position
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            
+            # Verificar si la nueva posición no es una pared
+            if not self.walls[nextx][nexty]:
+                next_position = (nextx, nexty)
+                
+                # Actualizar las esquinas visitadas si llegamos a una nueva esquina
+                new_corners_visited = list(corners_visited)
+                for i, corner in enumerate(self.corners):
+                    if next_position == corner:
+                        new_corners_visited[i] = True
+                
+                next_state = (next_position, tuple(new_corners_visited))
+                successors.append((next_state, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -359,8 +376,29 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    position, corners_visited = state
+    
+    # Si ya visitamos todas las esquinas, la heurística es 0
+    if all(corners_visited):
+        return 0
+    
+    # Encontrar las esquinas que aún no hemos visitado
+    unvisited_corners = []
+    for i, visited in enumerate(corners_visited):
+        if not visited:
+            unvisited_corners.append(corners[i])
+    
+    # Si no hay esquinas por visitar, retornamos 0
+    if not unvisited_corners:
+        return 0
+    
+    # Calcular la distancia Manhattan mínima a cualquier esquina no visitada
+    min_distance = float('inf')
+    for corner in unvisited_corners:
+        distance = abs(position[0] - corner[0]) + abs(position[1] - corner[1])
+        min_distance = min(min_distance, distance)
+    
+    return min_distance
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -453,7 +491,6 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
     
     # Obtener la lista de comidas restantes
     foodList = foodGrid.asList()
@@ -501,7 +538,6 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
         # Usar BFS para encontrar el camino a la comida más cercana
         return search.bfs(problem)
 
@@ -538,7 +574,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
-        "*** YOUR CODE HERE ***"
         # El objetivo es alcanzar cualquier posición que tenga comida
         return self.food[x][y]
 
